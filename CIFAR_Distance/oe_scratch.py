@@ -178,7 +178,7 @@ def train():
 
         loss = F.cross_entropy(x[:len(in_set[0])], target)
         # distance of latent vector to origin
-        loss += 0.5 * x[len(in_set[0]):].norm(dim=1).pow(2).mean()
+        loss += 0.5 * x[len(in_set[0]):].norm(dim=1).mean()
 
         loss.backward()
         optimizer.step()
