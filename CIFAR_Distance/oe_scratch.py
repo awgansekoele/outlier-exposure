@@ -33,7 +33,7 @@ parser.add_argument('--calibration', '-c', action='store_true',
                     help='Train a model to be used for calibration. This holds out some data for validation.')
 # Optimization options
 parser.add_argument('--epochs', '-e', type=int, default=100, help='Number of epochs to train.')
-parser.add_argument('--learning_rate', '-lr', type=float, default=0.02, help='The initial learning rate.')
+parser.add_argument('--learning_rate', '-lr', type=float, default=0.01, help='The initial learning rate.')
 parser.add_argument('--batch_size', '-b', type=int, default=128, help='Batch size.')
 parser.add_argument('--oe_batch_size', type=int, default=256, help='Batch size.')
 parser.add_argument('--test_bs', type=int, default=200)
@@ -201,7 +201,7 @@ def test():
 
             # forward
             output = net(data)
-            loss = F.cross_entropy(output, target)
+            loss = F.nll_loss(output, target)
 
             # accuracy
             pred = output.data.max(1)[1]
