@@ -20,7 +20,7 @@ def gen_cluster_means(size, C):
         loss.backward()
         if loss < opt_cluster_means_loss:
             opt_cluster_means_loss = loss
-            opt_cluster_means = torch.tensor(cluster_means[0])
+            opt_cluster_means = cluster_means[0].clone().detach()
         if loss < 1e-10:
             break
         optimizer.step()
