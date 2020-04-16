@@ -128,7 +128,7 @@ def get_ood_scores(loader, in_dist=False):
             latent = net.get_latent(data)
             output = net.get_distances(latent)
 
-            _score.append(to_np(latent.norm(dim=1).pow(2)))
+            _score.append(to_np(-latent.norm(dim=1).pow(2)))
 
             if in_dist:
                 preds = np.argmax(to_np(output), axis=1)
@@ -136,8 +136,8 @@ def get_ood_scores(loader, in_dist=False):
                 right_indices = preds == targets
                 wrong_indices = np.invert(right_indices)
 
-                _right_score.append(to_np(latent.norm(dim=1).pow(2))[right_indices])
-                _wrong_score.append(to_np(latent.norm(dim=1).pow(2))[wrong_indices])
+                _right_score.append(to_np(-latent.norm(dim=1).pow(2))[right_indices])
+                _wrong_score.append(to_np(-latent.norm(dim=1).pow(2))[wrong_indices])
 
     if in_dist:
         return concat(_score).copy(), concat(_right_score).copy(), concat(_wrong_score).copy()
