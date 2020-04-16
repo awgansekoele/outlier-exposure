@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source ~/new_begin.sh
-
-python test.py --method_name cifar10_$1 --num_to_avg 10 > snapshots/cifar10_$1_test.txt
+python test.py --method_name cifar10_wrn_oe_scratch --num_to_avg 10 --z-dim 10 --gpu 2 > snapshots/cifar10_wrn_oe_scratch_test.txt
 # allconv_oe_scratch, wrn_baseline, wrn_oe_tune
 
