@@ -171,7 +171,7 @@ def train():
 
         # forward
         z = net.get_latent(data)
-        x = net.get_distances(data)
+        x = net.get_distances(z)
 
         # backward
         scheduler.step()
@@ -179,7 +179,7 @@ def train():
 
         loss = F.nll_loss(x[:len(in_set[0])], target)
         # distance of latent vector to origin
-        loss += 0.5 * x[len(in_set[0]):].norm(dim=1).pow(2).mean()
+        loss += 0.5 * z[len(in_set[0]):].norm(dim=1).pow(2).mean()
 
         loss.backward()
         optimizer.step()
