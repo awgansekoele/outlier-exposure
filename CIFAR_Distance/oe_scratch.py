@@ -167,7 +167,7 @@ def train():
         data = torch.cat((in_set[0], out_set[0]), 0)
         target = in_set[1]
 
-        data, target = data.cuda(), target.cuda()
+        data, target = data.to(device), target.to(device)
 
         # forward
         z = net.get_latent(data)
@@ -197,7 +197,7 @@ def test():
     correct = 0
     with torch.no_grad():
         for data, target in test_loader:
-            data, target = data.cuda(), target.cuda()
+            data, target = data.to(device), target.to(device)
 
             # forward
             output = net(data)
