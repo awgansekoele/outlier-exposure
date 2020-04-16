@@ -248,7 +248,7 @@ get_and_print_results(ood_loader)
 
 # /////////////// Places365 ///////////////
 
-# ood_data = dset.ImageFolder(root="/share/data/vision-greg2/places365/test_subset",
+# ood_data = dset.ImageFolder(root="/share/data/vision-greg2/places365/test_subset", # /raid/data/arwin/data/svhn
 #                            transform=trn.Compose([trn.Resize(32), trn.CenterCrop(32),
 #                                                   trn.ToTensor(), trn.Normalize(mean, std)]))
 # ood_loader = torch.utils.data.DataLoader(ood_data, batch_size=args.test_bs, shuffle=True,
