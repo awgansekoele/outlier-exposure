@@ -239,7 +239,7 @@ get_and_print_results(ood_loader)
 # /////////////// SVHN ///////////////
 
 ood_data = svhn.SVHN(root='/raid/data/arwin/data/svhn', split="test",
-                     transform=trn.Compose([trn.Resize(32), trn.ToTensor(), trn.Normalize(mean, std)]), download=True)
+                     transform=trn.Compose([trn.Resize(32), trn.ToTensor(), trn.Normalize(mean, std)]), download=False)
 ood_loader = torch.utils.data.DataLoader(ood_data, batch_size=args.test_bs, shuffle=True,
                                          num_workers=args.prefetch, pin_memory=True)
 
