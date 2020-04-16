@@ -58,7 +58,6 @@ else:
     test_data = dset.CIFAR100('/raid/data/arwin/data', train=False, transform=test_transform)
     num_classes = 100
 
-
 test_loader = torch.utils.data.DataLoader(test_data, batch_size=args.test_bs, shuffle=False,
                                           num_workers=args.prefetch, pin_memory=True)
 
@@ -137,10 +136,8 @@ def get_ood_scores(loader, in_dist=False):
                 right_indices = preds == targets
                 wrong_indices = np.invert(right_indices)
 
-
                 _right_score.append(to_np(latent.norm(dim=1).pow(2))[right_indices])
                 _wrong_score.append(to_np(latent.norm(dim=1).pow(2))[wrong_indices])
-
 
     if in_dist:
         return concat(_score).copy(), concat(_right_score).copy(), concat(_wrong_score).copy()
@@ -168,15 +165,20 @@ auroc_list, aupr_list, fpr_list = [], [], []
 
 
 def get_and_print_results(ood_loader, num_to_avg=args.num_to_avg):
-
     aurocs, auprs, fprs = [], [], []
     for _ in range(num_to_avg):
         out_score = get_ood_scores(ood_loader)
         measures = get_measures(out_score, in_score)
-        aurocs.append(measures[0]); auprs.append(measures[1]); fprs.append(measures[2])
+        aurocs.append(measures[0]);
+        auprs.append(measures[1]);
+        fprs.append(measures[2])
 
-    auroc = np.mean(aurocs); aupr = np.mean(auprs); fpr = np.mean(fprs)
-    auroc_list.append(auroc); aupr_list.append(aupr); fpr_list.append(fpr)
+    auroc = np.mean(aurocs);
+    aupr = np.mean(auprs);
+    fpr = np.mean(fprs)
+    auroc_list.append(auroc);
+    aupr_list.append(aupr);
+    fpr_list.append(fpr)
 
     if num_to_avg >= 5:
         print_measures_with_std(aurocs, auprs, fprs, args.method_name)
@@ -237,7 +239,7 @@ get_and_print_results(ood_loader)
 # /////////////// SVHN ///////////////
 
 ood_data = svhn.SVHN(root='/raid/data/arwin/data/svhn', split="test",
-                     transform=trn.Compose([trn.Resize(32), trn.ToTensor(), trn.Normalize(mean, std)]), download=False)
+                     transform=trn.Compose([trn.Resize(32), trn.ToTensor(), trn.Normalize(mean, std)]), download=True)
 ood_loader = torch.utils.data.DataLoader(ood_data, batch_size=args.test_bs, shuffle=True,
                                          num_workers=args.prefetch, pin_memory=True)
 
@@ -246,14 +248,14 @@ get_and_print_results(ood_loader)
 
 # /////////////// Places365 ///////////////
 
-#ood_data = dset.ImageFolder(root="/share/data/vision-greg2/places365/test_subset",
+# ood_data = dset.ImageFolder(root="/share/data/vision-greg2/places365/test_subset",
 #                            transform=trn.Compose([trn.Resize(32), trn.CenterCrop(32),
 #                                                   trn.ToTensor(), trn.Normalize(mean, std)]))
-#ood_loader = torch.utils.data.DataLoader(ood_data, batch_size=args.test_bs, shuffle=True,
+# ood_loader = torch.utils.data.DataLoader(ood_data, batch_size=args.test_bs, shuffle=True,
 #                                         num_workers=args.prefetch, pin_memory=True)
 
-#print('\n\nPlaces365 Detection')
-#get_and_print_results(ood_loader)
+# print('\n\nPlaces365 Detection')
+# get_and_print_results(ood_loader)
 
 # /////////////// LSUN ///////////////
 
@@ -275,7 +277,6 @@ else:
 
 ood_loader = torch.utils.data.DataLoader(ood_data, batch_size=args.test_bs, shuffle=True,
                                          num_workers=args.prefetch, pin_memory=True)
-
 
 print('\n\nCIFAR-100 Detection') if 'cifar100' in args.method_name else print('\n\nCIFAR-10 Detection')
 get_and_print_results(ood_loader)
@@ -303,7 +304,6 @@ ood_loader = torch.utils.data.DataLoader(ood_data, batch_size=args.test_bs, shuf
 
 print('\n\nUniform[-1,1] Noise Detection')
 get_and_print_results(ood_loader)
-
 
 # /////////////// Arithmetic Mean of Images ///////////////
 
@@ -336,7 +336,6 @@ ood_loader = torch.utils.data.DataLoader(AvgOfPair(ood_data),
 
 print('\n\nArithmetic Mean of Random Image Pair Detection')
 get_and_print_results(ood_loader)
-
 
 # /////////////// Geometric Mean of Images ///////////////
 
