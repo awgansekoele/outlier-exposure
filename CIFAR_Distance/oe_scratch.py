@@ -179,7 +179,7 @@ def train():
 
         loss = F.nll_loss(x[:len(in_set[0])], target)
         # distance of latent vector to origin
-        loss += 0.5 * z[len(in_set[0]):].norm(dim=1).pow(2).mean()
+        loss += z[len(in_set[0]):].norm(dim=1).pow(2).mean()
 
         loss.backward()
         optimizer.step()
