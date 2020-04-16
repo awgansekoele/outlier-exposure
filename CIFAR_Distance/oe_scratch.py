@@ -108,7 +108,7 @@ if args.model == 'allconv':
 else:
     net = WideResNet(args.layers, num_classes, args.widen_factor, dropRate=args.droprate)
 
-net = DistanceNet(backbone=net, z_dim=args.z_dim, n_classes=num_classes)
+#net = DistanceNet(backbone=net, z_dim=args.z_dim, n_classes=num_classes)
 
 start_epoch = 0
 # Restore model if desired
@@ -170,16 +170,15 @@ def train():
         data, target = data.to(device), target.to(device)
 
         # forward
-        z = net.get_latent(data)
-        x = net.get_distances(z)
+        x = net(data)
 
         # backward
         scheduler.step()
         optimizer.zero_grad()
 
-        loss = F.nll_loss(x[:len(in_set[0])], target)
+        loss = F.cross_entropy(x[:len(in_set[0])], target)
         # distance of latent vector to origin
-        loss += 0.5 * z[len(in_set[0]):].norm(dim=1).pow(2).mean()
+        loss += 0.5 * x[len(in_set[0]):].norm(dim=1).pow(2).mean()
 
         loss.backward()
         optimizer.step()
@@ -201,7 +200,7 @@ def test():
 
             # forward
             output = net(data)
-            loss = F.nll_loss(output, target)
+            loss = F.cross_entropy(output, target)
 
             # accuracy
             pred = output.data.max(1)[1]
