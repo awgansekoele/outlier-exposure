@@ -139,8 +139,8 @@ def get_ood_scores(loader, in_dist=False):
 
                 #_right_score.append(to_np(-output.max(dim=1).values)[right_indices])
                 #_wrong_score.append(to_np(-output.max(dim=1).values)[wrong_indices])
-                right_score.append(to_np(-latent.norm(dim=1).pow(2))[right_indices])
-                wrong_score.append(to_np(-latent.norm(dim=1).pow(2))[wrong_indices])
+                _right_score.append(to_np(-latent.norm(dim=1).pow(2))[right_indices])
+                _wrong_score.append(to_np(-latent.norm(dim=1).pow(2))[wrong_indices])
 
     if in_dist:
         return concat(_score).copy(), concat(_right_score).copy(), concat(_wrong_score).copy()
