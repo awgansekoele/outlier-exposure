@@ -132,7 +132,7 @@ def get_ood_scores(loader, in_dist=False):
             _score.append(to_np(latent.norm(dim=1).pow(2)))
 
             if in_dist:
-                preds = np.argmax(output, axis=1)
+                preds = np.argmax(to_np(output), axis=1)
                 targets = target.numpy().squeeze()
                 right_indices = preds == targets
                 wrong_indices = np.invert(right_indices)
