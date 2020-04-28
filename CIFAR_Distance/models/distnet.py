@@ -32,8 +32,8 @@ class DistanceNet(nn.Module):
         super(DistanceNet, self).__init__()
         self.z_dim = z_dim
         self.backbone = backbone
-        self.cluster_means = nn.Parameter(gen_cluster_means((n_classes, z_dim), 10)).requires_grad_(False)
-
+        #self.cluster_means = nn.Parameter(gen_cluster_means((n_classes, z_dim), 10)).requires_grad_(False)
+        self.cluster_means = nn.Parameter(nn.zeros((n_classes, z_dim)))
     def forward(self, x):
         z = self.get_latent(x)
         o = self.get_distances(z)
