@@ -108,7 +108,7 @@ if args.model == 'allconv':
 else:
     net = WideResNet(args.layers, num_classes, args.widen_factor, dropRate=args.droprate)
 
-#net = DistanceNet(backbone=net, z_dim=args.z_dim, n_classes=num_classes)
+net = DistanceNet(backbone=net, z_dim=args.z_dim, n_classes=num_classes)
 
 start_epoch = 0
 # Restore model if desired
