@@ -58,7 +58,7 @@ class DistanceNet(nn.Module):
         if d != self.cluster_means.size(1):
             raise Exception
 
-        o = F.cosine_similarity(z_expanded, cluster_means_expanded)
+        o = F.cosine_similarity(z_expanded, cluster_means_expanded, dim=2)
 
         return o
 
