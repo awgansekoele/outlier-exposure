@@ -200,10 +200,10 @@ def test():
 
             # forward
             output = net(data)
-            loss = F.nll_loss((1-output).pow(2), target)
+            loss = torch.gather((1-output).pow(2), 1, target.view(-1, 1)).mean()
 
             # accuracy
-            pred = output.data.max(1)[1]
+            pred = output[:,:output.size(1).item()].data.max(1)[1]
             correct += pred.eq(target.data).sum().item()
 
             # test loss average
