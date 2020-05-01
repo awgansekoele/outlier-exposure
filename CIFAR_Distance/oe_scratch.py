@@ -178,7 +178,7 @@ def train():
 
         loss = torch.gather((1-o[:len(in_set[0])]).pow(2), 1, target.view(-1, 1)).mean()
         # distance of latent vector to origin
-        #loss += (1 - o[len(in_set[0]):, int(o.size(1)/2):].max(dim=1).values).pow(2).mean()
+        loss += (1 - o[len(in_set[0]):, int(o.size(1)/2):].max(dim=1).values).pow(2).mean()
 
         loss.backward()
         optimizer.step()
