@@ -33,7 +33,7 @@ parser.add_argument('--calibration', '-c', action='store_true',
                     help='Train a model to be used for calibration. This holds out some data for validation.')
 # Optimization options
 parser.add_argument('--epochs', '-e', type=int, default=100, help='Number of epochs to train.')
-parser.add_argument('--learning_rate', '-lr', type=float, default=0.1, help='The initial learning rate.')
+parser.add_argument('--learning_rate', '-lr', type=float, default=0.01, help='The initial learning rate.')
 parser.add_argument('--batch_size', '-b', type=int, default=128, help='Batch size.')
 parser.add_argument('--oe_batch_size', type=int, default=256, help='Batch size.')
 parser.add_argument('--test_bs', type=int, default=200)
@@ -176,9 +176,9 @@ def train():
         scheduler.step()
         optimizer.zero_grad()
 
-        loss = torch.gather((1-o[:len(in_set[0])]).pow(2), 1, target.view(-1, 1)).sum()
+        loss = torch.gather((1-o[:len(in_set[0])]).pow(2), 1, target.view(-1, 1)).mean()
         # distance of latent vector to origin
-        loss += (1 - o[len(in_set[0]):, int(o.size(1)/2):].max(dim=1).values).pow(2).sum() / 2
+        loss += (1 - o[len(in_set[0]):, int(o.size(1)/2):].max(dim=1).values).pow(2).mean()
 
         loss.backward()
         optimizer.step()
