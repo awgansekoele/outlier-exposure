@@ -170,16 +170,15 @@ def train():
         data, target = data.to(device), target.to(device)
 
         # forward
-        z = net.get_latent(data)
-        o = net.get_distances(z)
+        o = net(data)
 
         # backward
         scheduler.step()
         optimizer.zero_grad()
 
-        loss = F.cross_entropy(o[:len(in_set[0])], target)
+        loss = F.nll_loss((1-o[:len(in_set[0])]).pow(2), target)
         # distance of latent vector to origin
-        loss +=  z[len(in_set[0]):].norm(dim=1).pow(2).mean() / z[:len(in_set[0])].norm(dim=1).pow(2).mean()
+        loss += (1 - o[len(in_set[0]):, o.size(1)/2:].max(dim=1).values).mean()
 
         loss.backward()
         optimizer.step()
@@ -201,7 +200,7 @@ def test():
 
             # forward
             output = net(data)
-            loss = F.cross_entropy(output, target)
+            loss = F.nll_loss((1-output).pow(2), target)
 
             # accuracy
             pred = output.data.max(1)[1]

@@ -5,26 +5,32 @@ import torch.optim as optim
 import numpy as np
 
 
-def gen_cluster_means(size, C):
-    cluster_means = [torch.randn(size)]
+def gen_cluster_means(z_dim, n_classes):
+    ood_dim = torch.cat((torch.ones(n_classes, 1) / z_dim, -torch.ones(n_classes, 1) / z_dim))
+    cluster_means = [torch.randn((n_classes * 2, z_dim - 1))]
+
     cluster_means[0].requires_grad = True
 
     opt_cluster_means, opt_cluster_means_loss = None, float('inf')
 
     optimizer = optim.Adam(cluster_means, lr=1)
 
-    for i in range(10000):
-        cluster_means_l = torch.cat((cluster_means[0], torch.zeros(1, cluster_means[0].size(1))), dim=0)
-        loss = (C - torch.pdist(cluster_means_l)).pow(2).mean()
+    for i in range(1000):
+        c = cluster_means[0]
+        c = c.div(c.norm(dim=1, keepdim=True)) * np.sqrt(1 - 1 / (z_dim ** 2))
+        c = torch.cat((ood_dim, c), dim=1)
+        m = c @ c.T - 2 * torch.eye(n_classes * 2)
+        loss = m.max(dim=1).values.mean()
+
         optimizer.zero_grad()
         loss.backward()
         if loss < opt_cluster_means_loss:
             opt_cluster_means_loss = loss
-            opt_cluster_means = cluster_means[0].clone().detach()
-        if loss < 1e-10:
+            opt_cluster_means = c.detach().clone()
+        if loss < 0.1:
             break
         optimizer.step()
-    return opt_cluster_means.requires_grad_(False)
+    return opt_cluster_means
 
 
 class DistanceNet(nn.Module):
@@ -32,8 +38,8 @@ class DistanceNet(nn.Module):
         super(DistanceNet, self).__init__()
         self.z_dim = z_dim
         self.backbone = backbone
-        #self.cluster_means = nn.Parameter(gen_cluster_means((n_classes, z_dim), 10)).requires_grad_(False)
-        self.cluster_means = nn.Parameter(torch.zeros((n_classes, z_dim)))
+        self.cluster_means = nn.Parameter(gen_cluster_means(z_dim, n_classes)).requires_grad_(False)
+
     def forward(self, x):
         z = self.get_latent(x)
         o = self.get_distances(z)
@@ -52,7 +58,7 @@ class DistanceNet(nn.Module):
         if d != self.cluster_means.size(1):
             raise Exception
 
-        o = -torch.pow(z_expanded - cluster_means_expanded, 2).sum(2)
+        o = F.cosine_similarity(z_expanded, cluster_means_expanded)
 
         return o
 
