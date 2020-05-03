@@ -67,7 +67,7 @@ if 'allconv' in args.method_name:
 else:
     net = WideResNet(args.layers, num_classes, args.widen_factor, dropRate=args.droprate)
 
-#net = DistanceNet(backbone=net, z_dim=args.z_dim, n_classes=num_classes)
+net = DistanceNet(backbone=net, z_dim=args.z_dim, n_classes=num_classes)
 
 start_epoch = 0
 
@@ -130,7 +130,7 @@ def get_ood_scores(loader, in_dist=False):
             output = net(data)
             # _score.append(to_np(-output.max(dim=1).values))
             # _score.append(to_np(-latent.norm(dim=1).pow(2)))
-            _score.append(to_np(-output.softmax(dim=1).max(dim=1).values))
+            _score.append(to_np(-output[:, :output.size(1)].data.max(1).values))
 
             if in_dist:
                 preds = np.argmax(to_np(output), axis=1)
@@ -138,8 +138,8 @@ def get_ood_scores(loader, in_dist=False):
                 right_indices = preds == targets
                 wrong_indices = np.invert(right_indices)
 
-                _right_score.append(to_np(-output.softmax(dim=1).max(dim=1).values)[right_indices])
-                _wrong_score.append(to_np(-output.softmax(dim=1).max(dim=1).values)[wrong_indices])
+                _right_score.append(to_np(-output[:, :output.size(1)].data.max(1).values)[right_indices])
+                _wrong_score.append(to_np(-output[:, :output.size(1)].data.max(1).values)[wrong_indices])
 
                 # _right_score.append(to_np(-output.max(dim=1).values)[right_indices])
                 # _wrong_score.append(to_np(-output.max(dim=1).values)[wrong_indices])
