@@ -281,3 +281,8 @@ for epoch in range(start_epoch, args.epochs):
         state['test_loss'],
         100 - 100. * state['test_accuracy'])
     )
+
+experiment.log_model("model", os.path.join(args.save, args.dataset + calib_indicator + '_' + args.model +
+                            '_oe_scratch_epoch_' + str(epoch) + '.pt'))
+experiment.log_asset(os.path.join(args.save, args.dataset + calib_indicator + '_' + args.model +
+                                      '_oe_scratch_training_results.csv'))
