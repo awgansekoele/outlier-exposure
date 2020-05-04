@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from comet_ml import Experiment
+
 import numpy as np
 import os
 import pickle
@@ -55,6 +57,10 @@ args = parser.parse_args()
 
 state = {k: v for k, v in args._get_kwargs()}
 print(state)
+
+experiment = Experiment(api_key="T1ICBKLfUXrSnfizBvUW2K0GA", project_name="msc-thesis-ai", workspace="awgansekoele",
+                        parse_args=False)
+experiment.log_parameters(vars(args))
 
 torch.manual_seed(1)
 np.random.seed(1)
@@ -159,58 +165,63 @@ scheduler = torch.optim.lr_scheduler.LambdaLR(
 
 def train():
     net.train()  # enter train mode
-    loss_avg = 0.0
+    with experiment.train():
+        loss_avg = 0.0
 
-    # start at a random point of the outlier dataset; this induces more randomness without obliterating locality
-    train_loader_out.dataset.offset = np.random.randint(len(train_loader_out.dataset))
-    for in_set, out_set in zip(train_loader_in, train_loader_out):
-        data = torch.cat((in_set[0], out_set[0]), 0)
-        target = in_set[1]
+        # start at a random point of the outlier dataset; this induces more randomness without obliterating locality
+        train_loader_out.dataset.offset = np.random.randint(len(train_loader_out.dataset))
+        for in_set, out_set in zip(train_loader_in, train_loader_out):
+            data = torch.cat((in_set[0], out_set[0]), 0)
+            target = in_set[1]
 
-        data, target = data.to(device), target.to(device)
+            data, target = data.to(device), target.to(device)
 
-        # forward
-        o = net(data)
+            # forward
+            o = net(data)
 
-        # backward
-        scheduler.step()
-        optimizer.zero_grad()
+            # backward
+            scheduler.step()
+            optimizer.zero_grad()
 
-        loss = torch.gather((1-o[:len(in_set[0])]).pow(2), 1, target.view(-1, 1)).mean()
-        # distance of latent vector to origin
-        loss += (1 - o[len(in_set[0]):, int(o.size(1)/2):].max(dim=1).values).pow(2).mean()
+            loss = torch.gather((1-o[:len(in_set[0])]).pow(2), 1, target.view(-1, 1)).mean()
+            # distance of latent vector to origin
+            loss += (1 - o[len(in_set[0]):, int(o.size(1)/2):].max(dim=1).values).pow(2).mean()
 
-        loss.backward()
-        optimizer.step()
+            loss.backward()
+            optimizer.step()
 
-        # exponential moving average
-        loss_avg = loss_avg * 0.8 + float(loss) * 0.2
+            # exponential moving average
+            loss_avg = loss_avg * 0.8 + float(loss) * 0.2
 
     state['train_loss'] = loss_avg
+    experiment.log_metric('train_loss', state['train_loss'])
 
 
 # test function
 def test():
     net.eval()
-    loss_avg = 0.0
-    correct = 0
-    with torch.no_grad():
-        for data, target in test_loader:
-            data, target = data.to(device), target.to(device)
+    with experiment.test():
+        loss_avg = 0.0
+        correct = 0
+        with torch.no_grad():
+            for data, target in test_loader:
+                data, target = data.to(device), target.to(device)
 
-            # forward
-            output = net(data)
-            loss = torch.gather((1-output).pow(2), 1, target.view(-1, 1)).mean()
+                # forward
+                output = net(data)
+                loss = torch.gather((1-output).pow(2), 1, target.view(-1, 1)).mean()
 
-            # accuracy
-            pred = output[:,:output.size(1)].data.max(1)[1]
-            correct += pred.eq(target.data).sum().item()
+                # accuracy
+                pred = output[:,:output.size(1)].data.max(1)[1]
+                correct += pred.eq(target.data).sum().item()
 
-            # test loss average
-            loss_avg += float(loss.data)
+                # test loss average
+                loss_avg += float(loss.data)
 
-    state['test_loss'] = loss_avg / len(test_loader)
-    state['test_accuracy'] = correct / len(test_loader.dataset)
+        state['test_loss'] = loss_avg / len(test_loader)
+        state['test_accuracy'] = correct / len(test_loader.dataset)
+        experiment.log_metric('test_loss', state['test_loss'])
+        experiment.log_metric('test_accuracy', state['test_accuracy'])
 
 
 if args.test:
