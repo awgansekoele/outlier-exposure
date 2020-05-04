@@ -193,8 +193,8 @@ def train():
             # exponential moving average
             loss_avg = loss_avg * 0.8 + float(loss) * 0.2
 
-    state['train_loss'] = loss_avg
-    experiment.log_metric('train_loss', state['train_loss'])
+        state['train_loss'] = loss_avg
+        experiment.log_metric('loss', state['train_loss'])
 
 
 # test function
@@ -220,8 +220,8 @@ def test():
 
         state['test_loss'] = loss_avg / len(test_loader)
         state['test_accuracy'] = correct / len(test_loader.dataset)
-        experiment.log_metric('test_loss', state['test_loss'])
-        experiment.log_metric('test_accuracy', state['test_accuracy'])
+        experiment.log_metric('loss', state['test_loss'])
+        experiment.log_metric('accuracy', state['test_accuracy'])
 
 
 if args.test:
