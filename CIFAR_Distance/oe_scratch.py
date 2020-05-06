@@ -59,7 +59,7 @@ state = {k: v for k, v in args._get_kwargs()}
 print(state)
 
 experiment = Experiment(api_key="T1ICBKLfUXrSnfizBvUW2K0GA", project_name="msc-thesis-ai", workspace="awgansekoele",
-                        parse_args=False)
+                        log_graph=False, parse_args=False)
 experiment.log_parameters(vars(args))
 
 torch.manual_seed(1)
@@ -110,11 +110,12 @@ test_loader = torch.utils.data.DataLoader(
 
 # Create model
 if args.model == 'allconv':
-    net = AllConvNet(num_classes)
+    net = AllConvNet(args.z_dim)
 else:
-    net = WideResNet(args.layers, num_classes, args.widen_factor, dropRate=args.droprate)
+    net = WideResNet(args.layers, args.z_dim, args.widen_factor, dropRate=args.droprate)
 
 net = DistanceNet(backbone=net, z_dim=args.z_dim, n_classes=num_classes)
+experiment.set_model_graph(str(net), overwrite=True)
 
 start_epoch = 0
 # Restore model if desired
