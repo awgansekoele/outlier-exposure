@@ -1,3 +1,5 @@
+from comet_ml import Experiment
+
 import numpy as np
 import sys
 import os
@@ -41,6 +43,10 @@ parser.add_argument('--load', '-l', type=str, default='./snapshots', help='Check
 parser.add_argument('--gpu', type=int, action='append', default=[], help='Which gpus to use.')
 parser.add_argument('--prefetch', type=int, default=4, help='Pre-fetching threads.')
 args = parser.parse_args()
+
+experiment = Experiment(api_key="T1ICBKLfUXrSnfizBvUW2K0GA", project_name="msc-thesis-ai", workspace="awgansekoele",
+                        parse_args=False)
+experiment.log_parameters(vars(args))
 
 # torch.manual_seed(1)
 # np.random.seed(1)
