@@ -45,7 +45,7 @@ parser.add_argument('--prefetch', type=int, default=4, help='Pre-fetching thread
 args = parser.parse_args()
 
 experiment = Experiment(api_key="T1ICBKLfUXrSnfizBvUW2K0GA", project_name="msc-thesis-ai", workspace="awgansekoele",
-                        parse_args=False)
+                        log_graph=False, parse_args=False)
 experiment.log_parameters(vars(args))
 
 # torch.manual_seed(1)
@@ -69,11 +69,12 @@ test_loader = torch.utils.data.DataLoader(test_data, batch_size=args.test_bs, sh
 
 # Create model
 if 'allconv' in args.method_name:
-    net = AllConvNet(num_classes)
+    net = AllConvNet(args.z_dim)
 else:
-    net = WideResNet(args.layers, num_classes, args.widen_factor, dropRate=args.droprate)
+    net = WideResNet(args.layers, args.z_dim, args.widen_factor, dropRate=args.droprate)
 
 net = DistanceNet(backbone=net, z_dim=args.z_dim, n_classes=num_classes)
+experiment.set_model_graph(str(net), overwrite=True)
 
 start_epoch = 0
 
