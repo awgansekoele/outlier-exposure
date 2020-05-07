@@ -15,7 +15,7 @@ import torch.nn.functional as F
 from tqdm import tqdm
 from models.allconv import AllConvNet
 from models.wrn import WideResNet
-from models.distnet import DistanceNet
+from models.distnet import DistanceModule
 
 if __package__ is None:
     import sys
@@ -112,9 +112,9 @@ test_loader = torch.utils.data.DataLoader(
 if args.model == 'allconv':
     net = AllConvNet(args.z_dim)
 else:
-    net = WideResNet(args.layers, args.z_dim, args.widen_factor, dropRate=args.droprate)
+    net = WideResNet(args.layers, 1, args.widen_factor, dropRate=args.droprate)
 
-net = DistanceNet(backbone=net, z_dim=args.z_dim, n_classes=num_classes)
+net.fc = DistanceModule(z_dim=net.fc.in_features, n_classes=num_classes)
 experiment.set_model_graph(str(net), overwrite=True)
 
 start_epoch = 0

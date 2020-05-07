@@ -64,3 +64,23 @@ class DistanceNet(nn.Module):
 
     def get_cluster_means(self):
         return self.cluster_means
+
+
+class DistanceModule(nn.Module):
+    def __init__(self, z_dim, n_classes):
+        super(DistanceModule, self).__init__()
+        self.cluster_means = nn.Parameter(gen_cluster_means(z_dim, n_classes)).requires_grad_(False)
+
+    def forward(self, z):
+        n, d = z.size(0), z.size(1)
+        m = self.cluster_means.size(0)
+
+        z_expanded = z.unsqueeze(1).expand(n, m, d)
+        cluster_means_expanded = self.cluster_means.unsqueeze(0).expand(n, m, d)
+
+        if d != self.cluster_means.size(1):
+            raise Exception
+
+        o = F.cosine_similarity(z_expanded, cluster_means_expanded, dim=2)
+
+        return o
