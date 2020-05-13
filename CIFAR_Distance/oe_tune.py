@@ -117,19 +117,19 @@ else:
 net = DistanceNet(backbone=net, z_dim=args.z_dim, n_classes=num_classes)
 experiment.set_model_graph(str(net), overwrite=True)
 
-start_epoch = 0
-# Restore model if desired
+# Restore model
+model_found = False
 if args.load != '':
     for i in range(1000 - 1, -1, -1):
         model_name = os.path.join(args.load, args.dataset + calib_indicator + '_' + args.model +
-                                  '_oe_scratch_epoch_' + str(i) + '.pt')
+                                  '_baseline_epoch_' + str(i) + '.pt')
         if os.path.isfile(model_name):
             net.load_state_dict(torch.load(model_name))
             print('Model restored! Epoch:', i)
-            start_epoch = i + 1
+            model_found = True
             break
-    if start_epoch == 0:
-        assert False, "could not resume"
+    if not model_found:
+        assert False, "could not find model to restore"
 
 if len(args.gpu) > 1:
     net = torch.nn.DataParallel(net, device_ids=args.gpu)
