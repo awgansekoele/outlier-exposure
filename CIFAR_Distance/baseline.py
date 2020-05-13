@@ -46,7 +46,7 @@ parser.add_argument('--widen-factor', default=2, type=int, help='widen factor')
 parser.add_argument('--droprate', default=0.3, type=float, help='dropout probability')
 parser.add_argument('--z-dim', default=10, type=int, help='latent dimension')
 # Checkpoints
-parser.add_argument('--save', '-s', type=str, default='./snapshots/oe_scratch', help='Folder to save checkpoints.')
+parser.add_argument('--save', '-s', type=str, default='./snapshots/baseline', help='Folder to save checkpoints.')
 parser.add_argument('--load', '-l', type=str, default='', help='Checkpoint path to resume / test.')
 parser.add_argument('--test', '-t', action='store_true', help='Test only flag.')
 # Acceleration
@@ -259,3 +259,8 @@ for epoch in range(start_epoch, args.epochs):
         state['test_loss'],
         100 - 100. * state['test_accuracy'])
     )
+
+    experiment.log_model("model", os.path.join(args.save, args.dataset + calib_indicator + '_' + args.model +
+                                               '_baseline_epoch_' + str(epoch) + '.pt'))
+    experiment.log_asset(os.path.join(args.save, args.dataset + calib_indicator + '_' + args.model +
+                                      '_baseline_training_results.csv'))

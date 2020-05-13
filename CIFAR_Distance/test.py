@@ -96,6 +96,10 @@ if args.load != '':
             break
     if start_epoch == 0:
         assert False, "could not resume"
+    else:
+        experiment.log_model("model", model_name)
+
+
 
 net.eval()
 
