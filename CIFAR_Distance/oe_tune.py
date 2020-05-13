@@ -285,6 +285,6 @@ for epoch in range(0, args.epochs):
     )
 
 experiment.log_model("model", os.path.join(args.save, args.dataset + calib_indicator + '_' + args.model +
-                            '_oe_scratch_epoch_' + str(epoch) + '.pt'))
+                            '_oe_tune_epoch_' + str(epoch) + '.pt'))
 experiment.log_asset(os.path.join(args.save, args.dataset + calib_indicator + '_' + args.model +
-                                      '_oe_scratch_training_results.csv'))
+                                      '_oe_tune_training_results.csv'))
