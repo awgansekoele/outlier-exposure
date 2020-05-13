@@ -238,13 +238,13 @@ if not os.path.isdir(args.save):
     raise Exception('%s is not a dir' % args.save)
 
 with open(os.path.join(args.save, args.dataset + calib_indicator + '_' + args.model +
-                                  '_oe_scratch_training_results.csv'), 'w') as f:
+                                  '_oe_tune_training_results.csv'), 'w') as f:
     f.write('epoch,time(s),train_loss,test_loss,test_error(%)\n')
 
 print('Beginning Training\n')
 
 # Main loop
-for epoch in range(start_epoch, args.epochs):
+for epoch in range(0, args.epochs):
     state['epoch'] = epoch
 
     begin_epoch = time.time()
@@ -255,16 +255,16 @@ for epoch in range(start_epoch, args.epochs):
     # Save model
     torch.save(net.state_dict(),
                os.path.join(args.save, args.dataset + calib_indicator + '_' + args.model +
-                            '_oe_scratch_epoch_' + str(epoch) + '.pt'))
+                            '_oe_tune_epoch_' + str(epoch) + '.pt'))
     # Let us not waste space and delete the previous model
     prev_path = os.path.join(args.save, args.dataset + calib_indicator + '_' + args.model +
-                             '_oe_scratch_epoch_' + str(epoch - 1) + '.pt')
+                             '_oe_tune_epoch_' + str(epoch - 1) + '.pt')
     if os.path.exists(prev_path): os.remove(prev_path)
 
     # Show results
 
     with open(os.path.join(args.save, args.dataset + calib_indicator + '_' + args.model +
-                                      '_oe_scratch_training_results.csv'), 'a') as f:
+                                      '_oe_tune_training_results.csv'), 'a') as f:
         f.write('%03d,%05d,%0.6f,%0.5f,%0.2f\n' % (
             (epoch + 1),
             time.time() - begin_epoch,
