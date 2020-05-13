@@ -156,7 +156,7 @@ def train():
         net.train()  # enter train mode
         loss_avg = 0.0
         for data, target in train_loader:
-            data, target = data.cuda(), target.cuda()
+            data, target = data.to(device), target.to(device)
 
             # forward
             x = net(data)
@@ -183,7 +183,7 @@ def test():
         correct = 0
         with torch.no_grad():
             for data, target in test_loader:
-                data, target = data.cuda(), target.cuda()
+                data, target = data.to(device), target.to(device)
 
                 # forward
                 output = net(data)
