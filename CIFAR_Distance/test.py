@@ -13,7 +13,7 @@ import torchvision.datasets as dset
 import torch.nn.functional as F
 from models.allconv import AllConvNet
 from models.wrn import WideResNet
-from models.distnet import DistanceModule
+from models.distnet import DistanceNet
 from skimage.filters import gaussian as gblur
 from PIL import Image as PILImage
 
