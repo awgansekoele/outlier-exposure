@@ -34,8 +34,8 @@ parser.add_argument('--model', '-m', type=str, default='allconv',
 parser.add_argument('--calibration', '-c', action='store_true',
                     help='Train a model to be used for calibration. This holds out some data for validation.')
 # Optimization options
-parser.add_argument('--epochs', '-e', type=int, default=100, help='Number of epochs to train.')
-parser.add_argument('--learning_rate', '-lr', type=float, default=0.1, help='The initial learning rate.')
+parser.add_argument('--epochs', '-e', type=int, default=10, help='Number of epochs to train.')
+parser.add_argument('--learning_rate', '-lr', type=float, default=0.001, help='The initial learning rate.')
 parser.add_argument('--batch_size', '-b', type=int, default=128, help='Batch size.')
 parser.add_argument('--oe_batch_size', type=int, default=256, help='Batch size.')
 parser.add_argument('--test_bs', type=int, default=200)
@@ -48,7 +48,7 @@ parser.add_argument('--droprate', default=0.3, type=float, help='dropout probabi
 parser.add_argument('--z-dim', default=10, type=int, help='latent dimension')
 # Checkpoints
 parser.add_argument('--save', '-s', type=str, default='./snapshots/oe_scratch', help='Folder to save checkpoints.')
-parser.add_argument('--load', '-l', type=str, default='', help='Checkpoint path to resume / test.')
+parser.add_argument('--load', '-l', type=str, default='./snapshots/baseline', help='Checkpoint path to resume / test.')
 parser.add_argument('--test', '-t', action='store_true', help='Test only flag.')
 # Acceleration
 parser.add_argument('--gpu', type=int, action='append', default=[], help='Which gpus to use.')
