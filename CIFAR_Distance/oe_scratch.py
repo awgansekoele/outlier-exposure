@@ -186,8 +186,8 @@ def train():
 
             loss = torch.gather((1-o[:len(in_set[0])]).pow(2), 1, target.view(-1, 1)).mean()
             # distance of latent vector to origin
-            #loss += (1 - o[len(in_set[0]):, int(o.size(1)/2):].max(dim=1).values).pow(2).mean()
-            loss += (1 - o[len(in_set[0]):, -1]).squeeze().pow(2).mean()
+            loss += (1 - o[len(in_set[0]):, int(o.size(1)/2):]).pow(2).mean()
+            #loss += (1 - o[len(in_set[0]):, -1]).squeeze().pow(2).mean()
 
             loss.backward()
             optimizer.step()
@@ -214,7 +214,7 @@ def test():
                 loss = torch.gather((1-output).pow(2), 1, target.view(-1, 1)).mean()
 
                 # accuracy
-                pred = output[:,:output.size(1)-1].data.max(1)[1]
+                pred = output[:, :int(output.size(1)/2)].data.max(1)[1]
                 correct += pred.eq(target.data).sum().item()
 
                 # test loss average
