@@ -178,16 +178,17 @@ def train():
             data, target = data.to(device), target.to(device)
 
             # forward
-            o = net(data)
+            z = net.get_latent(data)
+            o_in = net.get_in_distances(z)
+            o_out = net.get_out_distances(z)
 
             # backward
             scheduler.step()
             optimizer.zero_grad()
 
-            loss = torch.gather((1-o[:len(in_set[0])]).pow(2), 1, target.view(-1, 1)).mean()
+            loss = torch.gather((1-o_in[:len(in_set[0])]).pow(2), 1, target.view(-1, 1)).mean()
             # distance of latent vector to origin
-            #loss += (1 - o[len(in_set[0]):, int(o.size(1)/2):].max(dim=1).values).pow(2).mean()
-            loss += (1 - o[len(in_set[0]):, -1]).squeeze().pow(2).mean()
+            loss += (1 - o_out[len(in_set[0]):]).pow(2).mean()
 
             loss.backward()
             optimizer.step()
