@@ -6,8 +6,8 @@ import numpy as np
 
 
 def gen_cluster_means(z_dim, n_classes):
-    ood_dim = torch.cat((torch.ones(n_classes, 1) / z_dim, -torch.ones(n_classes, 1) / z_dim))
-    cluster_means = [torch.randn((n_classes * 2, z_dim - 1))]
+    # ood_dim = torch.cat((torch.ones(n_classes, 1) / z_dim, -torch.ones(1, 1) / z_dim))
+    cluster_means = [torch.randn((n_classes + 1, z_dim))]
 
     cluster_means[0].requires_grad = True
 
@@ -15,11 +15,11 @@ def gen_cluster_means(z_dim, n_classes):
 
     optimizer = optim.Adam(cluster_means, lr=1)
 
-    for i in range(1000):
+    for i in range(10000):
         c = cluster_means[0]
-        c = c.div(c.norm(dim=1, keepdim=True)) * np.sqrt(1 - 1 / (z_dim ** 2))
-        c = torch.cat((ood_dim, c), dim=1)
-        m = c @ c.T - 2 * torch.eye(n_classes * 2)
+        c = c.div(c.norm(dim=1, keepdim=True)) #* np.sqrt(1 - 1 / (z_dim ** 2))
+        #c = torch.cat((ood_dim, c), dim=1)
+        m = c @ c.T - 2 * torch.eye(n_classes + 1)
         loss = m.max(dim=1).values.mean()
 
         optimizer.zero_grad()
@@ -42,20 +42,38 @@ class DistanceNet(nn.Module):
 
     def forward(self, x):
         z = self.get_latent(x)
-        o = self.get_distances(z)
+        o = self.get_in_distances(z)
         return o
 
     def get_latent(self, x):
         return self.backbone(x)
 
-    def get_distances(self, z):
+    def get_in_distances(self, z):
+        cluster_means = self.cluster_means[:self.cluster_means.size(0)-1]
+
         n, d = z.size(0), z.size(1)
-        m = self.cluster_means.size(0)
+        m = cluster_means.size(0)
 
         z_expanded = z.unsqueeze(1).expand(n, m, d)
-        cluster_means_expanded = self.cluster_means.unsqueeze(0).expand(n, m, d)
+        cluster_means_expanded = cluster_means.unsqueeze(0).expand(n, m, d)
 
-        if d != self.cluster_means.size(1):
+        if d != cluster_means.size(1):
+            raise Exception
+
+        o = F.cosine_similarity(z_expanded, cluster_means_expanded, dim=2)
+
+        return o
+
+    def get_out_distances(self, z):
+        cluster_means = self.cluster_means[-1:]
+
+        n, d = z.size(0), z.size(1)
+        m = cluster_means.size(0)
+
+        z_expanded = z.unsqueeze(1).expand(n, m, d)
+        cluster_means_expanded = cluster_means.unsqueeze(0).expand(n, m, d)
+
+        if d != cluster_means.size(1):
             raise Exception
 
         o = F.cosine_similarity(z_expanded, cluster_means_expanded, dim=2)
