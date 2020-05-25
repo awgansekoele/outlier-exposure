@@ -6,8 +6,8 @@ import numpy as np
 
 
 def gen_cluster_means(z_dim, n_classes):
-    # ood_dim = torch.cat((torch.ones(n_classes, 1) / z_dim, -torch.ones(1, 1) / z_dim))
-    cluster_means = [torch.randn((n_classes + 1, z_dim))]
+    ood_dim = torch.cat((torch.ones(n_classes, 1) / z_dim, -torch.ones(1, 1) / z_dim))
+    cluster_means = [torch.randn((n_classes + 1, z_dim - 1))]
 
     cluster_means[0].requires_grad = True
 
@@ -15,10 +15,10 @@ def gen_cluster_means(z_dim, n_classes):
 
     optimizer = optim.Adam(cluster_means, lr=1)
 
-    for i in range(10000):
+    for i in range(1000):
         c = cluster_means[0]
-        c = c.div(c.norm(dim=1, keepdim=True)) #* np.sqrt(1 - 1 / (z_dim ** 2))
-        #c = torch.cat((ood_dim, c), dim=1)
+        c = c.div(c.norm(dim=1, keepdim=True)) * np.sqrt(1 - 1 / (z_dim ** 2))
+        c = torch.cat((ood_dim, c), dim=1)
         m = c @ c.T - 2 * torch.eye(n_classes + 1)
         loss = m.max(dim=1).values.mean()
 
