@@ -113,14 +113,15 @@ if not os.path.exists(args.save):
 
 ### Create Tensor Dataset with only correct images ###
 
+cpu = torch.device('cpu')
 cor_data, cor_target = None, None
 
 for data, target in test_loader:
     data, target = data.to(device), target.to(device)
     output = net(data)
     iseq = output.argmax(dim=1) == target
-    cor_data = data[iseq] if cor_data is None else torch.cat((cor_data, data[iseq]))
-    cor_target = target[iseq] if cor_target is None else torch.cat((cor_target, target[iseq]))
+    cor_data = data[iseq].to(cpu) if cor_data is None else torch.cat((cor_data, data[iseq].to(cpu)))
+    cor_target = target[iseq].to(cpu) if cor_target is None else torch.cat((cor_target, target[iseq].to(cpu)))
 
 test_data = TensorDataset(cor_data, cor_target)
 test_loader = torch.utils.data.DataLoader(test_data, batch_size=args.test_bs, shuffle=False)
