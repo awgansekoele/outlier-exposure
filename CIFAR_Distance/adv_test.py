@@ -193,6 +193,7 @@ def get_and_print_results(ood_loader, num_to_avg=args.num_to_avg):
     else:
         print_measures(auroc, aupr, fpr, args.method_name)
 
+
 def get_adv_loader(adv_images, adv_labels):
     adv_data = TensorDataset(adv_images.float() / 255, adv_labels)
     adv_loader = DataLoader(adv_data, batch_size=args.test_bs, shuffle=False)
@@ -202,7 +203,7 @@ def get_adv_loader(adv_images, adv_labels):
     for data, target in adv_loader:
         data, target = data.to(device), target.to(device)
         output = net(data)
-        niseq = not output.argmax(dim=1) == target
+        niseq = ~(output.argmax(dim=1) == target)
         wrong_data = data[niseq] if wrong_data is None else torch.cat((wrong_data, data[niseq]))
         wrong_target = target[niseq] if wrong_target is None else torch.cat((wrong_target, target[niseq]))
 
