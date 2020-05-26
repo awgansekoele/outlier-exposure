@@ -6,7 +6,7 @@ import numpy as np
 
 
 def gen_cluster_means(z_dim, n_classes):
-    ood_dims = 10
+    ood_dims = 1
     if ood_dims >= z_dim:
         raise Exception
     ood_dim = torch.cat((torch.ones(n_classes, ood_dims) / z_dim, -torch.ones(1, ood_dims) / z_dim))
