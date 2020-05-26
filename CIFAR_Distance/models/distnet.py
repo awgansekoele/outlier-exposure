@@ -18,7 +18,7 @@ def gen_cluster_means(z_dim, n_classes):
 
     optimizer = optim.Adam(cluster_means, lr=1)
 
-    for i in range(1000):
+    for i in range(10000):
         c = cluster_means[0]
         c = c.div(c.norm(dim=1, keepdim=True)) * np.sqrt(1 - ood_dims / (z_dim ** 2))
         c = torch.cat((ood_dim, c), dim=1)
