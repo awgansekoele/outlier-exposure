@@ -132,7 +132,7 @@ def get_ood_scores(loader, in_dist=False):
             if batch_idx >= ood_num_examples // args.test_bs and in_dist is False:
                 break
 
-            data = data.cuda()
+            data = data.to(device)
 
             output = net(data)
             smax = to_np(F.softmax(output, dim=1))
