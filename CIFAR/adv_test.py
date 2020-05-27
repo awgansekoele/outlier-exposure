@@ -33,6 +33,7 @@ parser = argparse.ArgumentParser(description='Evaluates a CIFAR OOD Detector',
 # Setup
 parser.add_argument('--test_bs', type=int, default=200)
 parser.add_argument('--num_to_avg', type=int, default=1, help='Average measures across num_to_avg runs.')
+parser.add_argument('--use_xent', '-x', action='store_true', help='Use cross entropy scoring instead of the MSP.')
 parser.add_argument('--method_name', '-m', type=str, default='cifar10_allconv_baseline', help='Method name.')
 # Loading details
 parser.add_argument('--layers', default=40, type=int, help='total number of layers')
