@@ -77,27 +77,6 @@ experiment.set_model_graph(str(net), overwrite=True)
 
 start_epoch = 0
 
-# Restore model
-if args.load != '':
-    for i in range(1000 - 1, -1, -1):
-        if 'baseline' in args.method_name:
-            subdir = 'baseline'
-        elif 'oe_tune' in args.method_name:
-            subdir = 'oe_tune'
-        else:
-            subdir = 'oe_scratch'
-
-        model_name = os.path.join(os.path.join(args.load, subdir), args.method_name + '_epoch_' + str(i) + '.pt')
-        if os.path.isfile(model_name):
-            net.load_state_dict(torch.load(model_name))
-            print('Model restored! Epoch:', i)
-            start_epoch = i + 1
-            break
-    if start_epoch == 0:
-        assert False, "could not resume"
-    else:
-        experiment.log_model("model", model_name)
-
 net.eval()
 
 if len(args.gpu) > 1:
@@ -111,6 +90,27 @@ else:
     device = torch.device('cpu')
 
 cudnn.benchmark = True  # fire on all cylinders
+
+# Restore model
+if args.load != '':
+    for i in range(1000 - 1, -1, -1):
+        if 'baseline' in args.method_name:
+            subdir = 'baseline'
+        elif 'oe_tune' in args.method_name:
+            subdir = 'oe_tune'
+        else:
+            subdir = 'oe_scratch'
+
+        model_name = os.path.join(os.path.join(args.load, subdir), args.method_name + '_epoch_' + str(i) + '.pt')
+        if os.path.isfile(model_name):
+            net.load_state_dict(torch.load(model_name, map_location=device))
+            print('Model restored! Epoch:', i)
+            start_epoch = i + 1
+            break
+    if start_epoch == 0:
+        assert False, "could not resume"
+    else:
+        experiment.log_model("model", model_name)
 
 # /////////////// Detection Prelims ///////////////
 
