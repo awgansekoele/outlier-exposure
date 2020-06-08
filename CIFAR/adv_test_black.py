@@ -69,7 +69,7 @@ test_loader = DataLoader(test_data, batch_size=args.test_bs, shuffle=False,
                          num_workers=args.prefetch, pin_memory=True)
 
 # Create model
-if 'allconv' in args.method_name:
+if 'allconv' == args.model:
     net = AllConvNet(num_classes)
 else:
     net = WideResNet(args.layers, num_classes, args.widen_factor, dropRate=args.droprate)
