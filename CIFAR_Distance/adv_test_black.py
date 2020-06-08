@@ -59,7 +59,7 @@ std = [x / 255 for x in [63.0, 62.1, 66.7]]
 
 test_transform = trn.Compose([trn.ToTensor(), trn.Normalize(mean, std)])
 
-if 'cifar10' == args.method_name:
+if 'cifar10' == args.dataset:
     test_data = dset.CIFAR10('/raid/data/arwin/data', train=False, transform=test_transform)
     num_classes = 10
 else:
