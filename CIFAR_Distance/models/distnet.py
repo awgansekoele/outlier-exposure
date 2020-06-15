@@ -64,6 +64,7 @@ class DistanceNet(nn.Module):
             raise Exception
 
         o = F.cosine_similarity(z_expanded, cluster_means_expanded, dim=2)
+        o = 2 * o - o.pow(2)
 
         return o
 
@@ -80,6 +81,7 @@ class DistanceNet(nn.Module):
             raise Exception
 
         o = F.cosine_similarity(z_expanded, cluster_means_expanded, dim=2)
+        o = 2 * o - o.pow(2)
 
         return o
 
