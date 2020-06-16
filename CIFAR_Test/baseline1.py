@@ -83,7 +83,7 @@ test_loader = torch.utils.data.DataLoader(
 
 net = resnet18(pretrained=True)
 net.fc = nn.Linear(net.fc.in_features, args.z_dim)
-net.fc.weight = torch.nn.Parameter(net.fc.weight / args.z_dim).requires_grad_(True)
+net.fc.weight = torch.nn.Parameter(net.fc.weight / (args.z_dim * args.z_dim)).requires_grad_(True)
 net = NaiveNet(backbone=net, z_dim=args.z_dim, n_classes=num_classes)
 experiment.set_model_graph(str(net), overwrite=True)
 
