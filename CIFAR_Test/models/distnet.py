@@ -32,7 +32,6 @@ class NaiveNet(nn.Module):
             raise Exception
 
         o = -torch.pow(z_expanded - cluster_means_expanded, 2).sum(2)
-        print(o)
         return o
 
     def get_cluster_means(self):
