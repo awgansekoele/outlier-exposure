@@ -38,10 +38,11 @@ parser.add_argument('--decay', '-d', type=float, default=0.0005, help='Weight de
 # WRN Architecture
 parser.add_argument('--z-dim', default=1024, type=int, help='latent dimension')
 # Checkpoints
-parser.add_argument('--save', '-s', type=str, default='./snapshots/baseline', help='Folder to save checkpoints.')
+parser.add_argument('--save', '-s', type=str, default='./snapshots/baseline3', help='Folder to save checkpoints.')
 parser.add_argument('--load', '-l', type=str, default='', help='Checkpoint path to resume / test.')
 parser.add_argument('--test', '-t', action='store_true', help='Test only flag.')
 # Acceleration
+parser.add_argument('--seed', type=int, default=1, help='The seed to use.')
 parser.add_argument('--gpu', type=int, action='append', default=[], help='Which gpus to use.')
 parser.add_argument('--prefetch', type=int, default=4, help='Pre-fetching threads.')
 args = parser.parse_args()
@@ -73,15 +74,12 @@ else:
     test_data = dset.CIFAR100('/raid/data/arwin/data', train=False, transform=test_transform)
     num_classes = 100
 
-
-
 train_loader = torch.utils.data.DataLoader(
     train_data, batch_size=args.batch_size, shuffle=True,
     num_workers=args.prefetch, pin_memory=True)
 test_loader = torch.utils.data.DataLoader(
     test_data, batch_size=args.test_bs, shuffle=False,
     num_workers=args.prefetch, pin_memory=True)
-
 
 net = resnet18(pretrained=True)
 net.fc = nn.Linear(net.fc.in_features, args.z_dim)
@@ -93,7 +91,7 @@ start_epoch = 0
 # Restore model if desired
 if args.load != '':
     for i in range(1000 - 1, -1, -1):
-        model_name = os.path.join(args.load, args.dataset +  '_' + args.model +
+        model_name = os.path.join(args.load, args.dataset + '_' + args.model +
                                   '_baseline_epoch_' + str(i) + '.pt')
         if os.path.isfile(model_name):
             net.load_state_dict(torch.load(model_name))
@@ -199,7 +197,7 @@ if not os.path.isdir(args.save):
     raise Exception('%s is not a dir' % args.save)
 
 with open(os.path.join(args.save, args.dataset + '_' + 'resnet18' +
-                                  '_baseline_training_results.csv'), 'w') as f:
+                                  '_baseline_training_results_' + str(args.seed) + '.csv'), 'w') as f:
     f.write('epoch,time(s),train_loss,test_loss,test_error(%)\n')
 
 print('Beginning Training\n')
@@ -216,16 +214,16 @@ for epoch in range(start_epoch, args.epochs):
     # Save model
     torch.save(net.state_dict(),
                os.path.join(args.save, args.dataset + '_' + 'resnet18' +
-                            '_baseline_epoch_' + str(epoch) + '.pt'))
+                            '_baseline_epoch_' + str(epoch) + '_' + str(args.seed) + '.pt'))
     # Let us not waste space and delete the previous model
     prev_path = os.path.join(args.save, args.dataset + '_' + 'resnet18' +
-                             '_baseline_epoch_' + str(epoch - 1) + '.pt')
+                             '_baseline_epoch_' + str(epoch - 1) + '_' + str(args.seed) + '.pt')
     if os.path.exists(prev_path): os.remove(prev_path)
 
     # Show results
 
     with open(os.path.join(args.save, args.dataset + '_' + 'resnet18' +
-                                      '_baseline_training_results.csv'), 'a') as f:
+                                      '_baseline_training_results_' + str(args.seed) + '.csv'), 'a') as f:
         f.write('%03d,%05d,%0.6f,%0.5f,%0.2f\n' % (
             (epoch + 1),
             time.time() - begin_epoch,
@@ -246,6 +244,6 @@ for epoch in range(start_epoch, args.epochs):
     )
 
     experiment.log_model("model", os.path.join(args.save, args.dataset + '_' + 'resnet18' +
-                                               '_baseline_epoch_' + str(epoch) + '.pt'))
+                                               '_baseline_epoch_' + str(epoch) + '_' + str(args.seed) + '.pt'))
     experiment.log_asset(os.path.join(args.save, args.dataset + '_' + 'resnet18' +
-                                      '_baseline_training_results.csv'))
+                                      '_baseline_training_results_' + str(args.seed) + '.csv'))
