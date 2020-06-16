@@ -83,8 +83,6 @@ test_loader = torch.utils.data.DataLoader(
 
 net = resnet18(pretrained=True)
 net.fc = nn.Linear(net.fc.in_features, args.z_dim)
-nn.init.kaiming_normal_(net.fc.weight, a=0, mode='fan_out', nonlinearity='linear')
-nn.init.zeros_(net.fc.bias)
 net = NaiveNet(backbone=net, z_dim=args.z_dim, n_classes=num_classes)
 experiment.set_model_graph(str(net), overwrite=True)
 
