@@ -95,7 +95,7 @@ class PrioriNet(nn.Module):
         return self.cluster_means
 
 
-def gen_hyperspherical_cluster_means(z_dim, n_classes):
+def gen_hyperspherical_cluster_means(n_classes, z_dim):
     cluster_means = [torch.randn((n_classes, z_dim))]
     cluster_means[0].requires_grad = True
 
