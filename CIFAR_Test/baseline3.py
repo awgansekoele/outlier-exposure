@@ -29,8 +29,8 @@ parser = argparse.ArgumentParser(description='Trains a CIFAR Classifier',
 parser.add_argument('dataset', type=str, choices=['cifar10', 'cifar100'],
                     help='Choose between CIFAR-10, CIFAR-100.')
 # Optimization options
-parser.add_argument('--epochs', '-e', type=int, default=100, help='Number of epochs to train.')
-parser.add_argument('--learning_rate', '-lr', type=float, default=0.1, help='The initial learning rate.')
+parser.add_argument('--epochs', '-e', type=int, default=50, help='Number of epochs to train.')
+parser.add_argument('--learning_rate', '-lr', type=float, default=0.01, help='The initial learning rate.')
 parser.add_argument('--batch_size', '-b', type=int, default=128, help='Batch size.')
 parser.add_argument('--test_bs', type=int, default=200)
 parser.add_argument('--momentum', type=float, default=0.9, help='Momentum.')
@@ -175,7 +175,7 @@ def test():
                 loss = torch.gather(1 - output, 1, target.view(-1, 1)).mean()
 
                 # accuracy
-                pred = output[:,:output.size(1)-1].data.max(1)[1]
+                pred = output.data.max(1)[1]
                 correct += pred.eq(target.data).sum().item()
 
                 # test loss average
