@@ -82,8 +82,7 @@ test_loader = torch.utils.data.DataLoader(
     num_workers=args.prefetch, pin_memory=True)
 
 net = resnet18(pretrained=True)
-net.fc = nn.Linear(net.fc.in_features, args.z_dim)
-nn.init.xavier_normal_(net.fc)
+net.fc = nn.Linear(net.fc.in_features, args.z_dim).reset_parameters()
 net = NaiveNet(backbone=net, z_dim=args.z_dim, n_classes=num_classes)
 experiment.set_model_graph(str(net), overwrite=True)
 
