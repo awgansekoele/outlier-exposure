@@ -151,7 +151,7 @@ def train():
             scheduler.step()
             optimizer.zero_grad()
             loss = (F.cross_entropy(output, target) - torch.gather(output, 1, target.view(-1, 1))).mean()
-            loss *= np.min(1., warmup / 100.)
+            loss *= min(1., warmup / 100.)
             warmup += 1
             loss.backward()
             optimizer.step()
