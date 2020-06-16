@@ -57,6 +57,8 @@ experiment.log_parameters(vars(args))
 torch.manual_seed(1)
 np.random.seed(1)
 
+warmup = 1
+
 # mean and standard deviation of channels of CIFAR-10 images
 mean = [x / 255 for x in [125.3, 123.0, 113.9]]
 std = [x / 255 for x in [63.0, 62.1, 66.7]]
@@ -83,7 +85,6 @@ test_loader = torch.utils.data.DataLoader(
 
 net = resnet18(pretrained=True)
 net.fc = nn.Linear(net.fc.in_features, args.z_dim)
-net.fc.weight = torch.nn.Parameter(net.fc.weight / (args.z_dim * args.z_dim)).requires_grad_(True)
 net = NaiveNet(backbone=net, z_dim=args.z_dim, n_classes=num_classes)
 experiment.set_model_graph(str(net), overwrite=True)
 
@@ -136,6 +137,7 @@ scheduler = torch.optim.lr_scheduler.LambdaLR(
 # /////////////// Training ///////////////
 
 def train():
+    global warmup
     with experiment.train():
         net.train()  # enter train mode
         loss_avg = 0.0
@@ -149,6 +151,8 @@ def train():
             scheduler.step()
             optimizer.zero_grad()
             loss = (F.cross_entropy(output, target) - torch.gather(output, 1, target.view(-1, 1))).mean()
+            loss *= np.min(1, warmup / 100)
+            warmup += 1
             loss.backward()
             optimizer.step()
             # exponential moving average
@@ -171,6 +175,8 @@ def test():
                 # forward
                 output = net(data)
                 loss = (F.cross_entropy(output, target) - torch.gather(output, 1, target.view(-1, 1))).mean()
+
+
 
                 # accuracy
                 pred = output.data.max(1)[1]
