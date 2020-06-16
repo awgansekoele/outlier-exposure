@@ -147,7 +147,7 @@ def train():
             # backward
             scheduler.step()
             optimizer.zero_grad()
-            loss = F.cross_entropy(output, target).mean() #- torch.gather(output, 1, target.view(-1, 1)).mean()
+            loss = F.cross_entropy(output, target).mean() - torch.gather(output, 1, target.view(-1, 1)).mean()
             loss.backward()
             optimizer.step()
             # exponential moving average

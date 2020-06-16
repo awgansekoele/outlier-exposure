@@ -84,7 +84,7 @@ test_loader = torch.utils.data.DataLoader(
 net = resnet18(pretrained=True)
 net.fc = nn.Linear(net.fc.in_features, args.z_dim)
 net.fc.reset_parameters()
-net = HypersphericalNet(backbone=net, z_dim=args.z_dim, n_classes=num_classes)
+net = PrioriNet(backbone=net, z_dim=args.z_dim, n_classes=num_classes)
 experiment.set_model_graph(str(net), overwrite=True)
 
 start_epoch = 0
@@ -143,12 +143,12 @@ def train():
             data, target = data.to(device), target.to(device)
 
             # forward
-            x = net(data)
+            output = net(data)
 
             # backward
             scheduler.step()
             optimizer.zero_grad()
-            loss = torch.gather(1 - x, 1, target.view(-1, 1)).mean()
+            loss = -torch.gather(output, 1, target.view(-1, 1)).mean()
             loss.backward()
             optimizer.step()
 
@@ -171,7 +171,7 @@ def test():
 
                 # forward
                 output = net(data)
-                loss = torch.gather(1 - output, 1, target.view(-1, 1)).mean()
+                loss = -torch.gather(output, 1, target.view(-1, 1)).mean()
 
                 # accuracy
                 pred = output.data.max(1)[1]

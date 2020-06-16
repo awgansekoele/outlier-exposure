@@ -47,7 +47,7 @@ def gen_euclidean_cluster_means(n_classes, z_dim):
     optimizer = optim.Adam(cluster_means, lr=1)
 
     for i in range(10000):
-        loss = (5 - torch.pdist(cluster_means[0])).pow(2).mean()
+        loss = (10 - torch.pdist(cluster_means[0])).pow(2).mean()
         optimizer.zero_grad()
         loss.backward()
         if loss < opt_cluster_means_loss:
