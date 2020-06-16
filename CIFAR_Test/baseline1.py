@@ -148,7 +148,6 @@ def train():
             scheduler.step()
             optimizer.zero_grad()
             loss = (F.cross_entropy(output, target) - torch.gather(output, 1, target.view(-1, 1))).mean()
-            warmup += 1
             loss.backward()
             optimizer.step()
             # exponential moving average
