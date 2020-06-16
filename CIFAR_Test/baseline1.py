@@ -57,8 +57,6 @@ experiment.log_parameters(vars(args))
 torch.manual_seed(1)
 np.random.seed(1)
 
-warmup = 1
-
 # mean and standard deviation of channels of CIFAR-10 images
 mean = [x / 255 for x in [125.3, 123.0, 113.9]]
 std = [x / 255 for x in [63.0, 62.1, 66.7]]
@@ -137,7 +135,6 @@ scheduler = torch.optim.lr_scheduler.LambdaLR(
 # /////////////// Training ///////////////
 
 def train():
-    global warmup
     with experiment.train():
         net.train()  # enter train mode
         loss_avg = 0.0
@@ -151,7 +148,6 @@ def train():
             scheduler.step()
             optimizer.zero_grad()
             loss = (F.cross_entropy(output, target) - torch.gather(output, 1, target.view(-1, 1))).mean()
-            loss *= min(1., warmup / 100.)
             warmup += 1
             loss.backward()
             optimizer.step()

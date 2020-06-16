@@ -10,6 +10,7 @@ class NaiveNet(nn.Module):
         self.z_dim = z_dim
         self.backbone = backbone
         self.cluster_means = nn.Parameter(torch.zeros(n_classes, z_dim)).requires_grad_(True)
+        nn.init.kaiming_normal_(self.cluster_means)
 
     def forward(self, x):
         z = self.get_latent(x)
