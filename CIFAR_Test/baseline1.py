@@ -81,7 +81,7 @@ test_loader = torch.utils.data.DataLoader(
     test_data, batch_size=args.test_bs, shuffle=False,
     num_workers=args.prefetch, pin_memory=True)
 
-net = resnet18(pretrained=True)
+net = resnet18()
 net.fc = nn.Linear(net.fc.in_features, args.z_dim)
 net = NaiveNet(backbone=net, z_dim=args.z_dim, n_classes=num_classes)
 experiment.set_model_graph(str(net), overwrite=True)
