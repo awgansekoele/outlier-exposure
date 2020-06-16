@@ -113,8 +113,10 @@ else:
 
 cudnn.benchmark = True  # fire on all cylinders
 
-optimizer = torch.optim.SGD(
-    net.parameters(), state['learning_rate'], momentum=state['momentum'],
+optimizer = torch.optim.SGD([
+    {'params': net.backbone.parameters()},
+    {'params': net.cluster_means, 'lr': state['learning_rate'] / 100}],
+    state['learning_rate'], momentum=state['momentum'],
     weight_decay=state['decay'], nesterov=True)
 
 
