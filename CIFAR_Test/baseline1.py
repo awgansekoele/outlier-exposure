@@ -150,7 +150,7 @@ def train():
             loss = (F.cross_entropy(output, target) - torch.gather(output, 1, target.view(-1, 1))).mean()
             loss.backward()
             optimizer.step()
-
+            print(loss)
             # exponential moving average
             loss_avg = loss_avg * 0.8 + float(loss) * 0.2
 

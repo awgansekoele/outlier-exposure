@@ -6,7 +6,7 @@ import numpy as np
 
 class NaiveNet(nn.Module):
     def __init__(self, backbone, z_dim=1024, n_classes=10):
-        super(NaiveNet, self).__init__()
+        super(NaiveNetk, self).__init__()
         self.z_dim = z_dim
         self.backbone = backbone
         self.cluster_means = nn.Parameter(torch.zeros(n_classes, z_dim)).requires_grad_(True)
@@ -32,7 +32,7 @@ class NaiveNet(nn.Module):
             raise Exception
 
         o = -torch.pow(z_expanded - cluster_means_expanded, 2).sum(2)
-
+        print(o)
         return o
 
     def get_cluster_means(self):
