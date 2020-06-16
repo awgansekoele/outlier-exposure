@@ -198,7 +198,7 @@ if not os.path.exists(args.save):
 if not os.path.isdir(args.save):
     raise Exception('%s is not a dir' % args.save)
 
-with open(os.path.join(args.save, args.dataset + '_' + args.model +
+with open(os.path.join(args.save, args.dataset + '_' + 'resnet18' +
                                   '_baseline_training_results.csv'), 'w') as f:
     f.write('epoch,time(s),train_loss,test_loss,test_error(%)\n')
 
@@ -215,16 +215,16 @@ for epoch in range(start_epoch, args.epochs):
 
     # Save model
     torch.save(net.state_dict(),
-               os.path.join(args.save, args.dataset + '_' + args.model +
+               os.path.join(args.save, args.dataset + '_' + 'resnet18' +
                             '_baseline_epoch_' + str(epoch) + '.pt'))
     # Let us not waste space and delete the previous model
-    prev_path = os.path.join(args.save, args.dataset + '_' + args.model +
+    prev_path = os.path.join(args.save, args.dataset + '_' + 'resnet18' +
                              '_baseline_epoch_' + str(epoch - 1) + '.pt')
     if os.path.exists(prev_path): os.remove(prev_path)
 
     # Show results
 
-    with open(os.path.join(args.save, args.dataset + '_' + args.model +
+    with open(os.path.join(args.save, args.dataset + '_' + 'resnet18' +
                                       '_baseline_training_results.csv'), 'a') as f:
         f.write('%03d,%05d,%0.6f,%0.5f,%0.2f\n' % (
             (epoch + 1),
@@ -245,7 +245,7 @@ for epoch in range(start_epoch, args.epochs):
         100 - 100. * state['test_accuracy'])
     )
 
-    experiment.log_model("model", os.path.join(args.save, args.dataset + '_' + args.model +
+    experiment.log_model("model", os.path.join(args.save, args.dataset + '_' + 'resnet18' +
                                                '_baseline_epoch_' + str(epoch) + '.pt'))
-    experiment.log_asset(os.path.join(args.save, args.dataset + '_' + args.model +
+    experiment.log_asset(os.path.join(args.save, args.dataset + '_' + 'resnet18' +
                                       '_baseline_training_results.csv'))
