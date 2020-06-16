@@ -30,7 +30,7 @@ parser.add_argument('dataset', type=str, choices=['cifar10', 'cifar100'],
                     help='Choose between CIFAR-10, CIFAR-100.')
 # Optimization options
 parser.add_argument('--epochs', '-e', type=int, default=50, help='Number of epochs to train.')
-parser.add_argument('--learning_rate', '-lr', type=float, default=0.001, help='The initial learning rate.')
+parser.add_argument('--learning_rate', '-lr', type=float, default=0.01, help='The initial learning rate.')
 parser.add_argument('--batch_size', '-b', type=int, default=128, help='Batch size.')
 parser.add_argument('--test_bs', type=int, default=200)
 parser.add_argument('--momentum', type=float, default=0.9, help='Momentum.')
@@ -147,7 +147,7 @@ def train():
             # backward
             scheduler.step()
             optimizer.zero_grad()
-            loss = F.cross_entropy(output, target).mean() - torch.gather(output, 1, target.view(-1, 1)).mean()
+            loss = F.cross_entropy(output, target).mean() #- torch.gather(output, 1, target.view(-1, 1)).mean()
             loss.backward()
             optimizer.step()
             # exponential moving average
@@ -169,7 +169,7 @@ def test():
 
                 # forward
                 output = net(data)
-                loss = F.cross_entropy(output, target).mean() - 0.1 * torch.gather(output, 1, target.view(-1, 1)).mean()
+                loss = F.cross_entropy(output, target).mean() #- 0.1 * torch.gather(output, 1, target.view(-1, 1)).mean()
 
 
 
