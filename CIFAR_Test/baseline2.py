@@ -54,8 +54,8 @@ experiment = Experiment(api_key="T1ICBKLfUXrSnfizBvUW2K0GA", project_name="msc-t
                         log_graph=False, parse_args=False)
 experiment.log_parameters(vars(args))
 
-torch.manual_seed(1)
-np.random.seed(1)
+torch.manual_seed(args.seed)
+np.random.seed(args.seed)
 
 # mean and standard deviation of channels of CIFAR-10 images
 mean = [x / 255 for x in [125.3, 123.0, 113.9]]
@@ -108,7 +108,7 @@ if len(args.gpu) > 1:
 if len(args.gpu) > 0:
     device = torch.device('cuda:{}'.format(args.gpu[0]))
     net.to(device)
-    torch.cuda.manual_seed(1)
+    torch.cuda.manual_seed(args.seed)
 else:
     device = torch.device('cpu')
 
