@@ -38,7 +38,7 @@ parser.add_argument('--decay', '-d', type=float, default=0.0005, help='Weight de
 # WRN Architecture
 parser.add_argument('--z-dim', default=1024, type=int, help='latent dimension')
 # Checkpoints
-parser.add_argument('--save', '-s', type=str, default='./snapshots/baseline3', help='Folder to save checkpoints.')
+parser.add_argument('--save', '-s', type=str, default='./snapshots/baseline2', help='Folder to save checkpoints.')
 parser.add_argument('--load', '-l', type=str, default='', help='Checkpoint path to resume / test.')
 parser.add_argument('--test', '-t', action='store_true', help='Test only flag.')
 # Acceleration
