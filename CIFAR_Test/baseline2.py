@@ -244,7 +244,7 @@ for epoch in range(start_epoch, args.epochs):
         100 - 100. * state['test_accuracy'])
     )
 
-    experiment.log_model("model", os.path.join(args.save, args.dataset + '_' + 'resnet18' +
-                                               '_baseline_epoch_' + str(epoch) + '_' + str(args.seed) + '.pt'))
-    experiment.log_asset(os.path.join(args.save, args.dataset + '_' + 'resnet18' +
-                                      '_baseline_training_results_' + str(args.seed) + '.csv'))
+experiment.log_model("model", os.path.join(args.save, args.dataset + '_' + 'resnet18' +
+                                           '_baseline_epoch_' + str(epoch) + '_' + str(args.seed) + '.pt'))
+experiment.log_asset(os.path.join(args.save, args.dataset + '_' + 'resnet18' +
+                                  '_baseline_training_results_' + str(args.seed) + '.csv'))
