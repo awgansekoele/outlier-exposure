@@ -175,25 +175,24 @@ def train():
             data = torch.cat((in_set[0], out_set[0]), 0)
             target = in_set[1]
 
-            target = torch.cat((target, num_classes * torch.ones(len(out_set[0])).long()))
-
             data, target = data.to(device), target.to(device)
 
             # forward
             z = net.get_latent(data)
             o_in = net.get_in_distances(z)
             o_out = net.get_out_distances(z)
-            o = torch.cat((o_in, o_out), dim=1)
 
             # backward
             scheduler.step()
             optimizer.zero_grad()
 
+            loss = F.cross_entropy(o_in, target)
+
             # loss = torch.gather(1 - o_in[:len(in_set[0])], 1, target.view(-1, 1)).mean()
             # distance of latent vector to origin
-            # loss += (1 - o_out[len(in_set[0]):]).mean()
+            loss += (1 - o_out[len(in_set[0]):]).mean()
 
-            loss = F.cross_entropy(o, target)
+
 
             loss.backward()
             optimizer.step()
