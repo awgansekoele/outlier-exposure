@@ -175,7 +175,7 @@ def train():
             data = torch.cat((in_set[0], out_set[0]), 0)
             target = in_set[1]
 
-            target = torch.cat((target, num_classes * torch.ones(len(out_set[0]))))
+            target = torch.cat((target, num_classes * torch.ones(len(out_set[0])).long()))
 
             data, target = data.to(device), target.to(device)
 
