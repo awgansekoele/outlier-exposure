@@ -186,7 +186,7 @@ def train():
             scheduler.step()
             optimizer.zero_grad()
 
-            loss = F.cross_entropy(o_in, target)
+            loss = F.cross_entropy(o_in[:len(in_set[0])], target)
 
             # loss = torch.gather(1 - o_in[:len(in_set[0])], 1, target.view(-1, 1)).mean()
             # distance of latent vector to origin
