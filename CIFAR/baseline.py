@@ -45,7 +45,7 @@ parser.add_argument('--save', '-s', type=str, default='./snapshots/baseline', he
 parser.add_argument('--load', '-l', type=str, default='', help='Checkpoint path to resume / test.')
 parser.add_argument('--test', '-t', action='store_true', help='Test only flag.')
 # Acceleration
-parser.add_argument('--ngpu', type=int, default=1, help='0 = CPU.')
+parser.add_argument('--gpu', type=int, action='append', default=[], help='Which gpus to use.')
 parser.add_argument('--prefetch', type=int, default=4, help='Pre-fetching threads.')
 args = parser.parse_args()
 
@@ -106,12 +106,16 @@ if args.load != '':
     if start_epoch == 0:
         assert False, "could not resume"
 
-if args.ngpu > 1:
-    net = torch.nn.DataParallel(net, device_ids=list(range(args.ngpu)))
+if len(args.gpu) > 1:
+    net = torch.nn.DataParallel(net, device_ids=args.gpu)
 
-if args.ngpu > 0:
-    net.cuda()
+if len(args.gpu) > 0:
+    device = torch.device('cuda:{}'.format(args.gpu[0]))
+    net.to(device)
     torch.cuda.manual_seed(1)
+else:
+    device = torch.device('cpu')
+
 
 cudnn.benchmark = True  # fire on all cylinders
 
@@ -140,7 +144,7 @@ def train():
     net.train()  # enter train mode
     loss_avg = 0.0
     for data, target in train_loader:
-        data, target = data.cuda(), target.cuda()
+        data, target = data.to(device), target.to(device)
 
         # forward
         x = net(data)
@@ -165,7 +169,7 @@ def test():
     correct = 0
     with torch.no_grad():
         for data, target in test_loader:
-            data, target = data.cuda(), target.cuda()
+            data, target = data.to(device), target.to(device)
 
             # forward
             output = net(data)
