@@ -35,6 +35,7 @@ parser.add_argument('--test_bs', type=int, default=200)
 parser.add_argument('--num_to_avg', type=int, default=1, help='Average measures across num_to_avg runs.')
 parser.add_argument('--dataset', '-d', type=str, default='cifar10', help='Dataset name.')
 parser.add_argument('--model', '-model', type=str, default='wrn', help='Architecture name.')
+parser.add_argument('--method', '-method', type=str, default='baseline2', help='Training Method')
 # Loading details
 parser.add_argument('--layers', default=40, type=int, help='total number of layers')
 parser.add_argument('--widen-factor', default=2, type=int, help='widen factor')
@@ -81,10 +82,10 @@ start_epoch = 0
 # Restore model
 if args.load != '':
     for i in range(1000 - 1, -1, -1):
-        subdir = 'oe_scratch'
+        subdir = args.method
 
         model_name = os.path.join(os.path.join(args.load, subdir),
-                                  args.dataset + '_' + args.model + '_oe_scratch_epoch_' + str(i) + '.pt')
+                                  args.dataset + '_' + args.model + '_' + args.method + '_' + str(i) + '.pt')
         if os.path.isfile(model_name):
             net.load_state_dict(torch.load(model_name))
             print('Model restored! Epoch:', i)
@@ -170,7 +171,7 @@ print('\nUsing CIFAR-10 as typical data') if num_classes == 10 else print('\nUsi
 # /////////////// Error Detection ///////////////
 
 print('\n\nError Detection')
-show_performance(wrong_score, right_score, method_name=args.dataset + '_' + args.model + '_oe_scratch')
+show_performance(wrong_score, right_score, method_name=args.dataset + '_' + args.model + '_' + args.method)
 
 # /////////////// OOD Detection ///////////////
 auroc_list, aupr_list, fpr_list = [], [], []
@@ -193,9 +194,9 @@ def get_and_print_results(ood_loader, num_to_avg=args.num_to_avg):
     fpr_list.append(fpr)
 
     if num_to_avg >= 5:
-        print_measures_with_std(aurocs, auprs, fprs, args.dataset + '_' + args.model + '_oe_scratch')
+        print_measures_with_std(aurocs, auprs, fprs, args.dataset + '_' + args.model + '_' + args.method)
     else:
-        print_measures(auroc, aupr, fpr, args.dataset + '_' + args.model + '_oe_scratch')
+        print_measures(auroc, aupr, fpr, args.dataset + '_' + args.model + '_' + args.method)
 
 
 def get_adv_loader(adv_images, adv_labels):
@@ -273,4 +274,4 @@ get_and_print_results(adv_loader)
 # /////////////// Mean Results ///////////////
 
 print('\n\nMean Test Results')
-print_measures(np.mean(auroc_list), np.mean(aupr_list), np.mean(fpr_list), method_name=args.dataset + '_' + args.model + '_oe_scratch')
+print_measures(np.mean(auroc_list), np.mean(aupr_list), np.mean(fpr_list), method_name=args.dataset + '_' + args.model + '_' + args.method)
