@@ -86,6 +86,7 @@ if args.load != '':
 
         model_name = os.path.join(os.path.join(args.load, subdir),
                                   args.dataset + '_' + args.model + '_' + 'baseline' + '_' + str(i) + '.pt')
+        print(model_name)
         if os.path.isfile(model_name):
             net.load_state_dict(torch.load(model_name))
             print('Model restored! Epoch:', i)
