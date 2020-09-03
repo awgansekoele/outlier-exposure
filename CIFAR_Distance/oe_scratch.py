@@ -59,7 +59,7 @@ args = parser.parse_args()
 state = {k: v for k, v in args._get_kwargs()}
 print(state)
 
-experiment = Experiment(api_key="T1ICBKLfUXrSnfizBvUW2K0GA", project_name="msc-thesis-ai", workspace="awgansekoele",
+experiment = Experiment(api_key="T1ICBKLfUXrSnfizBvUW2K0GA", project_name="paper-fisher-watson", workspace="awgansekoele",
                         log_graph=False, parse_args=False)
 experiment.log_parameters(vars(args))
 

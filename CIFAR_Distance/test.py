@@ -44,7 +44,7 @@ parser.add_argument('--gpu', type=int, action='append', default=[], help='Which 
 parser.add_argument('--prefetch', type=int, default=4, help='Pre-fetching threads.')
 args = parser.parse_args()
 
-experiment = Experiment(api_key="T1ICBKLfUXrSnfizBvUW2K0GA", project_name="msc-thesis-ai", workspace="awgansekoele",
+experiment = Experiment(api_key="T1ICBKLfUXrSnfizBvUW2K0GA", project_name="paper-fisher-watson", workspace="awgansekoele",
                         log_graph=False, parse_args=False)
 experiment.log_parameters(vars(args))
 
