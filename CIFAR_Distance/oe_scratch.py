@@ -22,7 +22,8 @@ if __package__ is None:
     from os import path
 
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-    from utils.tinyimages_80mn_loader import TinyImages
+    from utils.imagenet32_loader import ImageNet32
+    #from utils.tinyimages_80mn_loader import TinyImages
     from utils.validation_dataset import validation_split
 
 parser = argparse.ArgumentParser(description='Trains a CIFAR Classifier with OE',
@@ -88,10 +89,12 @@ if args.calibration:
     train_data_in, val_data = validation_split(train_data_in, val_share=0.1)
     calib_indicator = '_calib'
 
+ood_means = [0.485, 0.456, 0.406]
+ood_stds = [0.229, 0.224, 0.225]
 
-ood_data = TinyImages(transform=trn.Compose(
+ood_data = ImageNet32(root_dir='/raid/data/arwin/data', transform=trn.Compose(
     [trn.ToTensor(), trn.ToPILImage(), trn.RandomCrop(32, padding=4),
-     trn.RandomHorizontalFlip(), trn.ToTensor(), trn.Normalize(mean, std)]))
+     trn.RandomHorizontalFlip(), trn.ToTensor(), trn.Normalize(ood_means, ood_stds)]))
 
 train_loader_in = torch.utils.data.DataLoader(
     train_data_in,
