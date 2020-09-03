@@ -25,6 +25,7 @@ class ImageNet32(Dataset):
         self.targets = np.asarray(targets)
         self.transform = transform
         self.target_transform = target_transform
+        self.offset = 0
 
     def __len__(self):
         return 1281167
@@ -37,6 +38,8 @@ class ImageNet32(Dataset):
         Returns:
             tuple: (image, target) where target is index of the target class.
         """
+        idx = (idx + self.offset) % 1281166
+
         img, target = self.data[idx], self.targets[idx]
         # doing this so that it is consistent with all other datasets
         # to return a PIL Image
