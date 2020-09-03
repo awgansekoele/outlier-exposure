@@ -38,8 +38,6 @@ class ImageNet32(Dataset):
             tuple: (image, target) where target is index of the target class.
         """
         img, target = self.data[idx], self.targets[idx]
-        print(img.shape)
-
         # doing this so that it is consistent with all other datasets
         # to return a PIL Image
         img = Image.fromarray(img)
