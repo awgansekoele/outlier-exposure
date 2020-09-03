@@ -89,12 +89,12 @@ if args.calibration:
     train_data_in, val_data = validation_split(train_data_in, val_share=0.1)
     calib_indicator = '_calib'
 
-ood_means = [0.485, 0.456, 0.406]
-ood_stds = [0.229, 0.224, 0.225]
+#ood_means = [0.485, 0.456, 0.406]
+#ood_stds = [0.229, 0.224, 0.225]
 
 ood_data = ImageNet32(root_dir='/raid/data/arwin/data', transform=trn.Compose(
     [trn.ToTensor(), trn.ToPILImage(), trn.RandomCrop(32, padding=4),
-     trn.RandomHorizontalFlip(), trn.ToTensor(), trn.Normalize(ood_means, ood_stds)]))
+     trn.RandomHorizontalFlip(), trn.ToTensor(), trn.Normalize(mean, std)]))
 
 train_loader_in = torch.utils.data.DataLoader(
     train_data_in,
