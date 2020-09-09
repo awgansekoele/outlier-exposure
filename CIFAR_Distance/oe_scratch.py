@@ -96,7 +96,7 @@ ood_stds = [0.229, 0.224, 0.225]
 #    [trn.ToTensor(), trn.ToPILImage(), trn.RandomCrop(32, padding=4),
 #     trn.RandomHorizontalFlip(), trn.ToTensor(), trn.Normalize(mean, std)]))
 ood_data = ImageNet32(root_dir='/raid/data/arwin/data', transform=trn.Compose(
-    [trn.ToTensor(), trn.Normalize(mean, std)]
+    [trn.ToTensor(), trn.Normalize(ood_means, ood_stds)]
 ))
 
 train_loader_in = torch.utils.data.DataLoader(
